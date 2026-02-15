@@ -140,7 +140,20 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         }
 
         // 7. Generate Output 1 (User Info)
-        output1 = `Done Bong. Please help test!\n\nID: ${data.id}\nName: ${data.fullName}\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
+        // Build info lines: show Project/Room instead of Name when available
+        let infoLines = `Done Bong. Please help test!\n\nID: ${data.id}`;
+        if (data.project) {
+            infoLines += `\nProject ：${data.project}`;
+        }
+        if (data.room) {
+            infoLines += `\nRoom：${data.room}`;
+        }
+        if (!data.project && !data.room) {
+            // Only show Name if no Project/Room
+            infoLines += `\nName: ${data.fullName}`;
+        }
+        infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
+        output1 = infoLines;
 
         // 7. Generate Output 2 (Command)
         output2 = `onu ${onuId} description ${data.id}-${data.name}
@@ -160,15 +173,31 @@ function parseCustomerData(text) {
         fullName: 'N/A',
         phone: 'N/A',
         username: '',
-        password: ''
+        password: '',
+        project: '',
+        room: ''
     };
 
     if (!text) return result;
 
-    // Regex for ID: matches "CID /ID: 113555" or "ID: 113555"
-    // Looks for "ID" followed by optional colon, spaces, and then digits
-    const idMatch = text.match(/(?:CID\s*\/|C)?ID\s*[:.]?\s*(\d+)/i);
-    if (idMatch) result.id = idMatch[1];
+    // Regex for ID: matches "CID /ID: 113555" or "ID: Processing" (digits or text)
+    const idMatch = text.match(/(?:CID\s*\/|C)?ID\s*[:.]?\s*([^\n\r]+)/i);
+    if (idMatch) {
+        let idVal = idMatch[1].trim();
+        // Remove trailing fields that might be on the same line
+        // If ID value starts with "ID:" again (like "ID: ID: Processing"), take the last part
+        const doubleIdMatch = idVal.match(/^ID\s*[:.]?\s*(.+)/i);
+        if (doubleIdMatch) idVal = doubleIdMatch[1].trim();
+        result.id = idVal;
+    }
+
+    // Regex for Project: matches "Project：PHP" or "Project: PHP" (supports fullwidth colon)
+    const projectMatch = text.match(/Project\s*[：:]\s*([^\n\r]+)/i);
+    if (projectMatch) result.project = projectMatch[1].trim();
+
+    // Regex for Room: matches "Room：C2919" or "Room: C2919" (supports fullwidth colon)
+    const roomMatch = text.match(/Room\s*[：:]\s*([^\n\r,]+)/i);
+    if (roomMatch) result.room = roomMatch[1].trim();
 
     // Regex for Name: matches "Name: Prong Bora ( PCP A2708)"
     // Update: Enforce colon/dot to avoid matching "text box name..." in the first line
