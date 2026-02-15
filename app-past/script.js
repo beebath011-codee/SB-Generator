@@ -70,12 +70,18 @@ function generateConfig() {
         const ipView = '103.216.48.130'; // Hardcoded per example
 
         // User Info Output (IP Mode)
-        output1 = `IP :${ipAddress}
+        output1 = `Done Bong. Please help test!
+
+ID: ${data.id}
+Name: ${data.fullName}
+IP :${ipAddress}
 Sub : ${subnet}
 GW : ${gateway}
 Port : ${portNum}
 
-IP view: ${ipView}`;
+IP view: ${ipView}
+
+Thank you, Bong.`;
 
         // Command Output (IP Mode)
         // Note: User example showed mixed ONU IDs "onu 32" and "onu 23". 
@@ -96,7 +102,7 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         output1 = `Done Bong. Please help test!
 
 ID: ${data.id}
-Name: ${data.name}
+Name: ${data.fullName}
 Username : ${macClean}${serviceType}      
 Password : ${phone}
 
@@ -117,6 +123,7 @@ function parseCustomerData(text) {
     const result = {
         id: 'N/A',
         name: 'N/A',
+        fullName: 'N/A',
         phone: 'N/A'
     };
 
@@ -134,29 +141,26 @@ function parseCustomerData(text) {
     const lastNameMatch = text.match(/(?:Last\s*Name|Surname)\s*[:.]?\s*([^\n\r]+)/i);
 
     if (firstNameMatch && lastNameMatch) {
-        // Found both? Combine them
-        result.name = firstNameMatch[1].trim() + ' ' + lastNameMatch[1].trim();
+        result.fullName = firstNameMatch[1].trim() + ' ' + lastNameMatch[1].trim();
     } else if (lastNameMatch) {
-        // Found only Last Name? Use it (User specifically asked to catch last name)
-        result.name = lastNameMatch[1].trim();
+        result.fullName = lastNameMatch[1].trim();
     } else {
-        // Fallback: matches "Name: ...", "Customer Name: ...", "Full Name: ..."
-        // Note: This also matches "First Name: ..." if proper First/Last detection failed, which is acceptable
         const nameLineMatch = text.match(/Name\s*[:.]?\s*([^\n\r]+)/i);
         if (nameLineMatch) {
-            let rawName = nameLineMatch[1].trim();
-            // Stop at the first parenthesis if it exists (for comments like "( PCP...)")
-            const parenIndex = rawName.indexOf('(');
-            if (parenIndex !== -1) {
-                rawName = rawName.substring(0, parenIndex).trim();
-            }
-            result.name = rawName;
+            result.fullName = nameLineMatch[1].trim();
         }
     }
 
-    // Extract only the last word as the name (e.g. "so bath" -> "bath")
-    if (result.name !== 'N/A') {
-        const words = result.name.trim().split(/\s+/);
+    // name = last word only (for ONU description)
+    // fullName = raw captured name (for User Info display)
+    if (result.fullName !== 'N/A') {
+        // Remove parenthetical for extracting last word
+        let cleanName = result.fullName;
+        const parenIndex = cleanName.indexOf('(');
+        if (parenIndex !== -1) {
+            cleanName = cleanName.substring(0, parenIndex).trim();
+        }
+        const words = cleanName.trim().split(/\s+/);
         result.name = words[words.length - 1];
     }
 
