@@ -197,3 +197,40 @@ function copyToClipboard(elementId, btnElement) {
         console.error('Failed to copy: ', err);
     });
 }
+
+let ipcamEnabled = false;
+
+function toggleIpcam() {
+    ipcamEnabled = !ipcamEnabled;
+    const fields = document.getElementById('ipcamFields');
+    const toggleBtn = document.getElementById('ipcamToggle');
+    const dot = document.getElementById('ipcamDot');
+    const isDark = document.documentElement.classList.contains('dark');
+
+    if (ipcamEnabled) {
+        // Show fields
+        fields.classList.remove('hidden');
+        // Toggle button ON style
+        toggleBtn.classList.remove('bg-slate-300', 'dark:bg-slate-800');
+        toggleBtn.classList.add('bg-blue-600', 'dark:bg-green-700');
+        // Move dot to right
+        dot.classList.remove('left-0.5');
+        dot.classList.add('left-[26px]');
+        dot.classList.remove('dark:bg-green-900');
+        dot.classList.add('dark:bg-green-400');
+    } else {
+        // Hide fields
+        fields.classList.add('hidden');
+        // Toggle button OFF style
+        toggleBtn.classList.remove('bg-blue-600', 'dark:bg-green-700');
+        toggleBtn.classList.add('bg-slate-300', 'dark:bg-slate-800');
+        // Move dot to left
+        dot.classList.remove('left-[26px]');
+        dot.classList.add('left-0.5');
+        dot.classList.remove('dark:bg-green-400');
+        dot.classList.add('dark:bg-green-900');
+        // Clear IP and Port values
+        document.getElementById('ipInput').value = '';
+        document.getElementById('portInput').value = '';
+    }
+}
