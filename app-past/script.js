@@ -156,7 +156,9 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         output1 = infoLines;
 
         // 7. Generate Output 2 (Command)
-        output2 = `onu ${onuId} description ${data.id}-${data.name}
+        // Use Room for description if Name is N/A but Room exists
+        let descLabel = (data.name === 'N/A' && data.room) ? data.room : `${data.id}-${data.name}`;
+        output2 = `onu ${onuId} description ${descLabel}
 onu ${onuId} ctc eth 1 vlan pvid ${vlanId} pri 0
 onu ${onuId} ctc eth 1 vlan mode tag`;
     }
