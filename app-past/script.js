@@ -90,9 +90,9 @@ Thank you, Bong.`;
 onu ${onuId} ctc eth 1 vlan pvid ${vlanId} pri 0
 onu ${onuId} ctc eth 1 vlan mode tag
 
-onu ${onuId} ctc eth 2 phy ctrl enable
+onu ${onuId} ctc eth 2 phy_ctrl enable
 onu ${onuId} ctc eth 2 policy cir 10240 cbs 1024 ebs 1024 
-onu ${onuId} ctc eth 2 rate limit cir 10240 pir 1024 
+onu ${onuId} ctc eth 2 rate_limit cir 10240 pir 1024 
 onu ${onuId} ctc eth 2 vlan pvid 420 pri 0
 onu ${onuId} ctc eth 2 vlan mode tag`;
 
