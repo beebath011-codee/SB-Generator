@@ -67,22 +67,26 @@
             </div>
         </div>
 
-        <!-- Add User Section -->
-        <div class="border border-green-800 p-4 mb-4 glow-border">
+        <!-- Create User Section -->
+        <div id="createUserSection" class="border border-green-800 p-4 mb-4 glow-border">
             <h2 class="text-sm tracking-widest uppercase text-green-600 mb-3 border-b border-green-900 pb-2">>>
-                PRE-REGISTER_USER</h2>
-            <p class="text-xs text-green-700 mb-3">Pre-register an email so they can sign up with the assigned role.</p>
+                CREATE_USER</h2>
+            <p class="text-xs text-green-700 mb-3">Create a new account. Only admins can add users.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+                <input type="email" id="newUserEmail" placeholder="Email"
+                    class="px-3 py-2 text-sm bg-black border border-green-800 text-green-400 placeholder-green-900 focus:border-green-500 focus:outline-none">
+                <input type="password" id="newUserPassword" placeholder="Password (min 6 chars)"
+                    class="px-3 py-2 text-sm bg-black border border-green-800 text-green-400 placeholder-green-900 focus:border-green-500 focus:outline-none">
+            </div>
             <div class="flex gap-2">
-                <input type="email" id="newUserEmail" placeholder="user@example.com"
-                    class="flex-1 px-3 py-2 text-sm bg-black border border-green-800 text-green-400 placeholder-green-900 focus:border-green-500 focus:outline-none">
                 <select id="newUserRole"
                     class="bg-black border border-green-800 text-green-400 text-sm px-3 py-2 focus:border-green-500 focus:outline-none">
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                 </select>
-                <button onclick="preRegisterUser()"
+                <button onclick="createUser()"
                     class="bg-green-700 hover:bg-green-600 text-black px-4 py-2 font-bold text-xs tracking-wider border border-green-500 transition-all">
-                    ADD
+                    CREATE
                 </button>
             </div>
         </div>

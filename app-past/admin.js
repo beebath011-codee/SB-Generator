@@ -1,19 +1,14 @@
 // Admin Dashboard Logic
+const FIREBASE_API_KEY = 'AIzaSyArd6_mtR0se_x8SsEacfM8FX7Y5FHsXIU';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check auth and admin status
     checkAuth(async (user) => {
         const isAdmin = await checkAdmin(user);
         if (!isAdmin) {
-            // Not admin — redirect to main app
             window.location.href = 'index.html';
             return;
         }
-
-        // Show admin email
         document.getElementById('adminEmail').textContent = user.email;
-
-        // Load users
         loadUsers();
     });
 });
@@ -64,7 +59,6 @@ async function loadUsers() {
             tbody.appendChild(row);
         });
 
-        // Update user count
         document.getElementById('userCount').textContent = snapshot.size;
     } catch (err) {
         console.error('Error loading users:', err);
@@ -79,49 +73,86 @@ async function changeRole(uid, newRole) {
         showAdminMsg(`Role updated to ${newRole.toUpperCase()}`, 'success');
     } catch (err) {
         showAdminMsg('Failed to update role: ' + err.message, 'error');
-        loadUsers(); // Reload to revert UI
+        loadUsers();
     }
 }
 
 // Delete user document from Firestore
 async function deleteUser(uid, email) {
-    if (!confirm(`Delete user ${email}? This removes their access.`)) return;
+    if (!confirm(`Delete user ${email}? They will no longer be able to access the app.`)) return;
 
     try {
         await db.collection('users').doc(uid).delete();
-        showAdminMsg(`User ${email} deleted`, 'success');
+        showAdminMsg(`User ${email} removed`, 'success');
         loadUsers();
     } catch (err) {
         showAdminMsg('Failed to delete: ' + err.message, 'error');
     }
 }
 
-// Create new user — Note: Firebase client SDK can't create users without signing in as them
-// So we create the Firestore doc and the user must sign up via the login page
-// For admin convenience, we provide a "pre-register" that creates the Firestore doc
-async function preRegisterUser() {
+// Create new user via Firebase REST API (doesn't sign out the admin)
+async function createUser() {
     const email = document.getElementById('newUserEmail').value.trim();
+    const password = document.getElementById('newUserPassword').value.trim();
     const role = document.getElementById('newUserRole').value;
 
-    if (!email) {
-        showAdminMsg('Please enter an email', 'error');
+    if (!email || !password) {
+        showAdminMsg('Please enter email and password', 'error');
+        return;
+    }
+    if (password.length < 6) {
+        showAdminMsg('Password must be at least 6 characters', 'error');
         return;
     }
 
+    const btn = document.querySelector('#createUserSection button');
+    btn.textContent = 'CREATING...';
+    btn.disabled = true;
+
     try {
-        // Create a placeholder doc with email as key
-        await db.collection('preRegistered').doc(email).set({
+        // Use Firebase Auth REST API to create user without signing in as them
+        const response = await fetch(
+            `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    returnSecureToken: false
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw new Error(data.error.message);
+        }
+
+        // Create Firestore document for the new user
+        await db.collection('users').doc(data.localId).set({
             email: email,
             role: role,
-            createdBy: auth.currentUser.email,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdBy: auth.currentUser.email
         });
 
-        showAdminMsg(`Pre-registered ${email} as ${role.toUpperCase()}. They can now sign up.`, 'success');
+        showAdminMsg(`User ${email} created as ${role.toUpperCase()}`, 'success');
         document.getElementById('newUserEmail').value = '';
+        document.getElementById('newUserPassword').value = '';
+        loadUsers();
+
     } catch (err) {
-        showAdminMsg('Failed: ' + err.message, 'error');
+        let msg = err.message;
+        if (msg.includes('EMAIL_EXISTS')) msg = 'Email already registered';
+        if (msg.includes('WEAK_PASSWORD')) msg = 'Password too weak (min 6 chars)';
+        if (msg.includes('INVALID_EMAIL')) msg = 'Invalid email format';
+        showAdminMsg('Failed: ' + msg, 'error');
     }
+
+    btn.textContent = 'CREATE';
+    btn.disabled = false;
 }
 
 function showAdminMsg(msg, type) {
