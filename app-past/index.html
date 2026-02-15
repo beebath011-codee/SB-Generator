@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISP Config Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Dark Mode: Hacker Font */
+        .dark body {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Light Mode: Inter Font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom Scrollbar for Hacker Mode */
+        .dark ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #15803d;
+            border-radius: 2px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #22c55e;
+        }
+    </style>
+</head>
+<!-- Body: Light(Slate-50) vs Dark(Black + Green Text) -->
+
+<body
+    class="bg-slate-50 text-slate-800 dark:bg-black dark:text-green-500 transition-colors duration-300 min-h-screen p-4 md:p-8 dark:selection:bg-green-900 dark:selection:text-white">
+
+    <!-- Wrapper: Light(Rounded/White/Shadow) vs Dark(Square/Black/GreenBorder/Glow) -->
+    <div class="max-w-4xl mx-auto 
+        bg-white rounded-xl shadow-lg border border-slate-200
+        dark:bg-slate-950 dark:rounded-none dark:shadow-[0_0_20px_rgba(34,197,94,0.2)] dark:border-green-800
+        overflow-hidden transition-all duration-300">
+
+        <!-- Header -->
+        <div class="px-6 py-4 flex justify-between items-center
+            bg-slate-900 border-b border-slate-200
+            dark:bg-black dark:border-green-800">
+            <div>
+                <!-- Title: White in Light Mode header (since header is dark slate), Green in Dark Mode -->
+                <h1 class="text-xl font-bold text-white dark:text-green-400 uppercase tracking-widest dark:glitch-text">
+                    ISP Config Generator</h1>
+                <p class="text-slate-400 dark:text-green-800 text-xs">
+                    <span class="hidden dark:inline">Initializing system... Ready.</span>
+                    <span class="dark:hidden">Generate customer configuration instantly</span>
+                </p>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- Status Indicator -->
+                <div class="text-xs text-green-400 dark:text-green-900 animate-pulse font-mono">● ONLINE</div>
+
+                <!-- Theme Toggle Button -->
+                <button id="themeToggle"
+                    class="p-2 rounded-full bg-slate-800 text-yellow-400 hover:bg-slate-700 dark:text-slate-400 dark:hover:text-white transition-colors">
+                    <!-- Sun Icon (Show in Dark) -->
+                    <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                        </path>
+                    </svg>
+                    <!-- Moon Icon (Show in Light) -->
+                    <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- Left Column: Inputs -->
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider
+                        text-slate-700 dark:text-green-700">
+                        <span class="dark:hidden">Customer Info Block</span>
+                        <span class="hidden dark:inline">>> Customer Info Block</span>
+                    </label>
+                    <textarea id="customerInput" rows="6"
+                        class="w-full px-3 py-2 text-sm transition-all
+                        bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:placeholder-green-900 dark:focus:border-green-500 dark:focus:ring-green-500"
+                        placeholder="Paste text here like:&#10;text box name CID /ID: 113555&#10;Name: Prong Bora ( PCP A2708)&#10;Address: st 528...&#10;Phone: 078666153"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider
+                        text-slate-700 dark:text-green-700">
+                        <span class="dark:hidden">MAC Address</span>
+                        <span class="hidden dark:inline">>> MAC Address</span>
+                    </label>
+                    <input type="text" id="macInput"
+                        class="w-full px-3 py-2 text-sm transition-all
+                        bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:placeholder-green-900 dark:focus:border-green-500 dark:focus:ring-green-500"
+                        placeholder="7C:DA:04:AB">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold mb-1 uppercase tracking-wider
+                            text-slate-700 dark:text-green-700">
+                            <span class="dark:hidden">Service Type</span>
+                            <span class="hidden dark:inline">>> Service Type</span>
+                        </label>
+                        <select id="serviceType"
+                            class="w-full px-3 py-2 text-sm transition-all
+                            bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
+                            dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:focus:border-green-500">
+                            <option value="@fiberlink">@fiberlink</option>
+                            <option value="@todayhome">@todayhome</option>
+                            <option value="@todayfiber">@todayfiber</option>
+                            <option value="@todayplus">@todayplus</option>
+                            <option value="@sf">@sf</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1 uppercase tracking-wider
+                            text-slate-700 dark:text-green-700">
+                            <span class="dark:hidden">GPON/EPON:ONU</span>
+                            <span class="hidden dark:inline">>> GPON/EPON:ONU</span>
+                        </label>
+                        <input type="text" id="interfaceInput"
+                            class="w-full px-3 py-2 text-sm transition-all
+                            bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
+                            dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:placeholder-green-900 dark:focus:border-green-500"
+                            placeholder="GPON/EPON0/16:36">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold mb-1 uppercase tracking-wider
+                            text-slate-700 dark:text-green-700">
+                            <span class="dark:hidden">IP Address (Optional)</span>
+                            <span class="hidden dark:inline">>> IP Address (Opt)</span>
+                        </label>
+                        <input type="text" id="ipInput"
+                            class="w-full px-3 py-2 text-sm transition-all
+                            bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
+                            dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:placeholder-green-900 dark:focus:border-green-500"
+                            placeholder="10.168.168.173">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1 uppercase tracking-wider
+                            text-slate-700 dark:text-green-700">
+                            <span class="dark:hidden">Port (Optional)</span>
+                            <span class="hidden dark:inline">>> Port (Opt)</span>
+                        </label>
+                        <input type="text" id="portInput"
+                            class="w-full px-3 py-2 text-sm transition-all
+                            bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
+                            dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:placeholder-green-900 dark:focus:border-green-500"
+                            placeholder="8173">
+                    </div>
+                </div>
+
+                <button id="generateBtn"
+                    class="w-full font-bold py-3 transition-all shadow-sm uppercase tracking-wider
+                    bg-blue-600 hover:bg-blue-700 text-white rounded-lg
+                    dark:bg-green-700 dark:hover:bg-green-600 dark:text-black dark:rounded-none dark:shadow-[0_0_10px_rgba(21,128,61,0.5)] dark:hover:shadow-[0_0_15px_rgba(34,197,94,0.7)] dark:border dark:border-green-500">
+                    <span class="dark:hidden">Generate Configuration</span>
+                    <span class="hidden dark:inline">[ EXECUTE_GENERATION ]</span>
+                </button>
+            </div>
+
+            <!-- Right Column: Outputs -->
+            <div class="space-y-6">
+
+                <!-- Output 1 -->
+                <div class="p-4 relative group transition-all
+                    bg-slate-50 rounded-lg border border-slate-200
+                    dark:bg-black dark:rounded-none dark:border-green-800 dark:shadow-inner dark:shadow-green-900/20">
+
+                    <div class="flex justify-between items-center mb-2 pb-2
+                        border-b border-transparent dark:border-green-900">
+                        <label class="text-xs font-bold uppercase tracking-widest
+                            text-slate-500 dark:text-green-600">
+                            <span class="dark:hidden">User Info</span>
+                            <span class="hidden dark:inline">>> User_Info_Output</span>
+                        </label>
+                        <button onclick="copyToClipboard('output1', this)"
+                            class="text-xs px-3 py-1 transition-colors flex items-center gap-1 font-mono uppercase
+                            bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 rounded
+                            dark:bg-slate-900 dark:hover:bg-green-900 dark:text-green-500 dark:border-green-700 dark:rounded-none">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <span class="dark:hidden">Copy</span>
+                            <span class="hidden dark:inline">CPY</span>
+                        </button>
+                    </div>
+                    <textarea id="output1" rows="8" readonly onclick="this.removeAttribute('readonly');" class="w-full text-sm font-mono whitespace-pre overflow-x-auto min-h-[100px] bg-transparent border-0 focus:ring-0 p-0 resize-none
+                        text-slate-800 dark:text-green-300"></textarea>
+                    <div class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xs py-1 px-3 opacity-0 transition-opacity uppercase
+                        bg-gray-800 text-white rounded
+                        dark:bg-green-500 dark:text-black dark:font-bold dark:border dark:border-black" id="toast1">
+                        <span class="dark:hidden">Copied!</span>
+                        <span class="hidden dark:inline">Data_Copied</span>
+                    </div>
+                </div>
+
+                <!-- Output 2 -->
+                <div class="p-4 relative group transition-all
+                    bg-slate-50 rounded-lg border border-slate-200
+                    dark:bg-black dark:rounded-none dark:border-green-800 dark:shadow-inner dark:shadow-green-900/20">
+
+                    <div class="flex justify-between items-center mb-2 pb-2
+                        border-b border-transparent dark:border-green-900">
+                        <label class="text-xs font-bold uppercase tracking-widest
+                            text-slate-500 dark:text-green-600">
+                            <span class="dark:hidden">Command</span>
+                            <span class="hidden dark:inline">>> Command_Line_Output</span>
+                        </label>
+                        <button onclick="copyToClipboard('output2', this)"
+                            class="text-xs px-3 py-1 transition-colors flex items-center gap-1 font-mono uppercase
+                            bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 rounded
+                            dark:bg-slate-900 dark:hover:bg-green-900 dark:text-green-500 dark:border-green-700 dark:rounded-none">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <span class="dark:hidden">Copy</span>
+                            <span class="hidden dark:inline">CPY</span>
+                        </button>
+                    </div>
+                    <textarea id="output2" rows="10" readonly onclick="this.removeAttribute('readonly');" class="w-full text-sm font-mono whitespace-pre overflow-x-auto min-h-[100px] bg-transparent border-0 focus:ring-0 p-0 resize-none
+                        text-slate-800 dark:text-green-300"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Creator Footer -->
+        <div class="px-6 py-3 flex justify-end
+            bg-slate-50 border-t border-slate-200
+            dark:bg-black dark:border-green-800">
+            <p class="text-xs font-mono tracking-widest uppercase
+                text-slate-500 dark:text-green-700">
+                Creator: <span class="font-bold text-slate-800 dark:text-green-500">BeeBath</span>
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Instructions / Legend -->
+    <div class="max-w-4xl mx-auto mt-6 px-4 p-4 transition-all
+        dark:border dark:border-green-900 dark:bg-slate-950">
+        <h3 class="text-xs font-bold uppercase mb-3 tracking-widest
+            text-slate-500 dark:text-green-700">
+            <span class="dark:hidden">VLAN Mapping Legend</span>
+            <span class="hidden dark:inline">:: System_VLAN_Map ::</span>
+        </h3>
+        <div class="flex flex-wrap gap-2 text-xs font-mono
+            text-slate-600 dark:text-green-600">
+
+            <span class="px-2 py-1 bg-white border border-slate-200 rounded
+                dark:bg-black dark:border-green-800 dark:rounded-none">@fiberlink: 67</span>
+
+            <span class="px-2 py-1 bg-white border border-slate-200 rounded
+                dark:bg-black dark:border-green-800 dark:rounded-none">@todayhome: 67</span>
+
+            <span class="px-2 py-1 bg-white border border-slate-200 rounded
+                dark:bg-black dark:border-green-800 dark:rounded-none">@todayfiber: 63</span>
+
+            <span class="px-2 py-1 bg-white border border-slate-200 rounded
+                dark:bg-black dark:border-green-800 dark:rounded-none">@todayplus: 67</span>
+
+            <span class="px-2 py-1 bg-white border border-slate-200 rounded
+                dark:bg-black dark:border-green-800 dark:rounded-none">@sf: 64</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+
+            // Optional: Save preference to localStorage
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Check for saved preference
+        if (localStorage.getItem('theme') === 'light') {
+            htmlElement.classList.remove('dark');
+        } else {
+            htmlElement.classList.add('dark'); // Default to dark
+        }
+    </script>
+</body>
+
+</html>
