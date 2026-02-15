@@ -56,6 +56,14 @@ function generateConfig() {
         phone = '0' + phone.substring(3);
     }
 
+    // If password was parsed from text, use it as fallback for phone
+    if (data.password && (phone === 'N/A' || phone === '')) {
+        phone = data.password;
+        if (phone.startsWith('855') && phone.length > 9) {
+            phone = '0' + phone.substring(3);
+        }
+    }
+
     // Determine Output Mode based on IP input presence
     let output1 = '';
     let output2 = '';
@@ -98,10 +106,17 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
 
     } else {
         // --- STANDARD MODE (PPPoE) ---
-        // Build username: add N before @ if DNS mode is on
-        let username = `${macClean}${serviceType}`;
-        if (dnsEnabled) {
-            username = `${macClean}N${serviceType}`;
+        // Determine username: use parsed username from text if MAC box is empty, else build from MAC
+        let username = '';
+        if (macClean === '' && data.username) {
+            // Use the username from the pasted text as-is
+            username = data.username;
+        } else {
+            // Build username from MAC + service type
+            username = `${macClean}${serviceType}`;
+            if (dnsEnabled) {
+                username = `${macClean}N${serviceType}`;
+            }
         }
 
         // Build DNS string from full name (lowercase, no spaces, + .todayddns.com)
@@ -136,7 +151,9 @@ function parseCustomerData(text) {
         id: 'N/A',
         name: 'N/A',
         fullName: 'N/A',
-        phone: 'N/A'
+        phone: 'N/A',
+        username: '',
+        password: ''
     };
 
     if (!text) return result;
@@ -179,6 +196,14 @@ function parseCustomerData(text) {
     // Regex for Phone: matches "Phone: 078666153"
     const phoneMatch = text.match(/Phone\s*[:.]?\s*(\d+)/i);
     if (phoneMatch) result.phone = phoneMatch[1];
+
+    // Parse Username from text: matches "Username : 1917FB52N@fiberlink" or "Username: xxx@todayhome"
+    const usernameMatch = text.match(/Username\s*[:.]?\s*([^\s|]+)/i);
+    if (usernameMatch) result.username = usernameMatch[1].trim();
+
+    // Parse Password from text: matches "Password : 012601100" or "Password: xxx"
+    const passwordMatch = text.match(/Password\s*[:.]?\s*([^\s|]+)/i);
+    if (passwordMatch) result.password = passwordMatch[1].trim();
 
     return result;
 }
