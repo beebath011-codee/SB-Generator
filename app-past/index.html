@@ -70,7 +70,21 @@
                 </p>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <!-- Admin Link (hidden by default, shown for admins) -->
+                <a id="adminLink" href="admin.html" class="hidden border border-green-800 text-green-500 px-2 py-1 text-xs hover:bg-green-900/30 transition-colors tracking-wider dark:inline-block
+                    rounded bg-slate-700 text-white hover:bg-slate-600 dark:bg-transparent dark:rounded-none">
+                    <span class="dark:hidden">Admin</span>
+                    <span class="hidden dark:inline">ADMIN</span>
+                </a>
+
+                <!-- Logout Button -->
+                <button onclick="logout()" class="border border-red-800 text-red-500 px-2 py-1 text-xs hover:bg-red-900/30 transition-colors tracking-wider
+                    rounded bg-slate-700 text-red-300 hover:bg-slate-600 dark:bg-transparent dark:rounded-none">
+                    <span class="dark:hidden">Logout</span>
+                    <span class="hidden dark:inline">EXIT</span>
+                </button>
+
                 <!-- Status Indicator -->
                 <div class="text-xs text-green-400 dark:text-green-900 animate-pulse font-mono">● ONLINE</div>
 
@@ -331,7 +345,21 @@
         </div>
     </div>
 
-    <script src="script.js?v=20260215i"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Auth Guard: redirect to login if not authenticated
+        checkAuth(async (user) => {
+            const isAdmin = await checkAdmin(user);
+            if (isAdmin) {
+                document.getElementById('adminLink').classList.remove('hidden');
+            }
+        });
+    </script>
+    <script src="script.js?v=20260215j"></script>
     <script>
         // Theme Toggle Logic
         const themeToggleBtn = document.getElementById('themeToggle');

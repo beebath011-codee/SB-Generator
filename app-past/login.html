@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | ISP Config Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .dark body {
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        @keyframes flicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        .scanline::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(34, 197, 94, 0.1);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .glow-border {
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3), inset 0 0 15px rgba(34, 197, 94, 0.05);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+        }
+
+        input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px black inset !important;
+            -webkit-text-fill-color: #4ade80 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-green-500 min-h-screen flex items-center justify-center p-4 scanline">
+    <!-- Background grid effect -->
+    <div class="fixed inset-0 opacity-5"
+        style="background-image: repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(34,197,94,0.3) 50px), repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(34,197,94,0.3) 50px);">
+    </div>
+
+    <div class="relative z-10 w-full max-w-md">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold glow-text tracking-widest uppercase mb-2"
+                style="animation: flicker 3s infinite;">
+                ISP Config Generator
+            </h1>
+            <p class="text-green-700 text-xs tracking-wider">[ AUTHENTICATION REQUIRED ]</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="border border-green-800 p-6 glow-border">
+            <div class="border-b border-green-900 pb-3 mb-5">
+                <span class="text-green-600 text-xs tracking-widest uppercase">>> SYSTEM_LOGIN</span>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMsg"
+                class="hidden mb-4 p-3 border border-red-800 bg-red-900/20 text-red-400 text-xs tracking-wider">
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMsg"
+                class="hidden mb-4 p-3 border border-green-800 bg-green-900/20 text-green-400 text-xs tracking-wider">
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider text-green-700">>> Email</label>
+                    <input type="email" id="email" required
+                        class="w-full px-3 py-2 text-sm bg-black border border-green-800 text-green-400 placeholder-green-900 focus:border-green-500 focus:outline-none font-mono"
+                        placeholder="user@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider text-green-700">>>
+                        Password</label>
+                    <input type="password" id="password" required
+                        class="w-full px-3 py-2 text-sm bg-black border border-green-800 text-green-400 placeholder-green-900 focus:border-green-500 focus:outline-none font-mono"
+                        placeholder="••••••••">
+                </div>
+
+                <button type="submit" id="loginBtn"
+                    class="w-full py-3 font-bold uppercase tracking-widest text-sm bg-green-700 hover:bg-green-600 text-black border border-green-500 transition-all btn-glow">
+                    [ ACCESS_SYSTEM ]
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="my-5 border-t border-green-900"></div>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider text-green-700">>> Email</label>
+                    <input type="email" id="signupEmail" required
+                        class="w-full px-3 py-2 text-sm bg-black border border-green-800 text-green-400 placeholder-green-900 focus:border-green-500 focus:outline-none font-mono"
+                        placeholder="user@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider text-green-700">>>
+                        Password</label>
+                    <input type="password" id="signupPassword" required minlength="6"
+                        class="w-full px-3 py-2 text-sm bg-black border border-green-800 text-green-400 placeholder-green-900 focus:border-green-500 focus:outline-none font-mono"
+                        placeholder="Min 6 characters">
+                </div>
+
+                <button type="submit" id="signupBtn"
+                    class="w-full py-3 font-bold uppercase tracking-widest text-sm bg-green-700 hover:bg-green-600 text-black border border-green-500 transition-all btn-glow">
+                    [ CREATE_ACCOUNT ]
+                </button>
+            </form>
+
+            <!-- Toggle Login/Signup -->
+            <div class="text-center mt-4">
+                <button id="toggleAuth" onclick="toggleAuthMode()"
+                    class="text-green-700 hover:text-green-400 text-xs tracking-wider transition-colors">
+                    >> No account? Register here
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-6 text-green-900 text-xs tracking-wider">
+            <span>SECURE_CONNECTION :: FIREBASE_AUTH</span>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs (compat version for script tags) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        let isLoginMode = true;
+
+        // Check if already logged in
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                await ensureUserDoc(user);
+                const isAdmin = await checkAdmin(user);
+                window.location.href = isAdmin ? 'admin.html' : 'index.html';
+            }
+        });
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.textContent = '[ AUTHENTICATING... ]';
+            btn.disabled = true;
+            hideMessages();
+
+            try {
+                const cred = await auth.signInWithEmailAndPassword(email, password);
+                await ensureUserDoc(cred.user);
+                const isAdmin = await checkAdmin(cred.user);
+                showSuccess('ACCESS GRANTED. Redirecting...');
+                setTimeout(() => {
+                    window.location.href = isAdmin ? 'admin.html' : 'index.html';
+                }, 800);
+            } catch (err) {
+                showError(getErrorMessage(err.code));
+                btn.textContent = '[ ACCESS_SYSTEM ]';
+                btn.disabled = false;
+            }
+        });
+
+        // Signup
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const btn = document.getElementById('signupBtn');
+
+            btn.textContent = '[ CREATING... ]';
+            btn.disabled = true;
+            hideMessages();
+
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
+                await ensureUserDoc(cred.user);
+                showSuccess('ACCOUNT CREATED. Redirecting...');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 800);
+            } catch (err) {
+                showError(getErrorMessage(err.code));
+                btn.textContent = '[ CREATE_ACCOUNT ]';
+                btn.disabled = false;
+            }
+        });
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('loginForm').classList.toggle('hidden', !isLoginMode);
+            document.getElementById('signupForm').classList.toggle('hidden', isLoginMode);
+            document.getElementById('toggleAuth').textContent = isLoginMode
+                ? '>> No account? Register here'
+                : '>> Already have account? Login here';
+            hideMessages();
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = '⚠ ' + msg;
+            el.classList.remove('hidden');
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = '✓ ' + msg;
+            el.classList.remove('hidden');
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMsg').classList.add('hidden');
+            document.getElementById('successMsg').classList.add('hidden');
+        }
+
+        function getErrorMessage(code) {
+            switch (code) {
+                case 'auth/invalid-email': return 'INVALID EMAIL FORMAT';
+                case 'auth/user-disabled': return 'ACCOUNT DISABLED BY ADMIN';
+                case 'auth/user-not-found': return 'ACCOUNT NOT FOUND';
+                case 'auth/wrong-password': return 'INCORRECT PASSWORD';
+                case 'auth/invalid-credential': return 'INVALID CREDENTIALS';
+                case 'auth/email-already-in-use': return 'EMAIL ALREADY REGISTERED';
+                case 'auth/weak-password': return 'PASSWORD TOO WEAK (MIN 6 CHARS)';
+                case 'auth/too-many-requests': return 'TOO MANY ATTEMPTS. TRY LATER';
+                default: return 'AUTHENTICATION FAILED: ' + code;
+            }
+        }
+    </script>
+</body>
+
+</html>
