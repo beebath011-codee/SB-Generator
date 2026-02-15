@@ -70,17 +70,12 @@ function generateConfig() {
         const ipView = '103.216.48.130'; // Hardcoded per example
 
         // User Info Output (IP Mode)
-        output1 = `Done Bong. please help test!
-ID : ${data.id}
-Name: ${data.name}
-IP :${ipAddress}
+        output1 = `IP :${ipAddress}
 Sub : ${subnet}
 GW : ${gateway}
 Port : ${portNum}
 
-IP view: ${ipView}
-
-Thank you, Bong.`;
+IP view: ${ipView}`;
 
         // Command Output (IP Mode)
         // Note: User example showed mixed ONU IDs "onu 32" and "onu 23". 
