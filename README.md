@@ -10,7 +10,7 @@ A web-based tool for IT Network Engineers to quickly generate ISP customer confi
 - VLAN mapping for multiple service types
 
 ## Live Demo
-Visit the live site: https://beebath011-codee.github.io/SB-Generator/
+Visit the live site: https://specialist-net.github.io/SB-Generator/
 
 ## Creator
 **BeeBath**
