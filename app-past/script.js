@@ -134,7 +134,7 @@ function parseCustomerData(text) {
 
     // Regex for Name: matches "Name: Prong Bora ( PCP A2708)"
     // Update: Enforce colon/dot to avoid matching "text box name..." in the first line
-    const nameLineMatch = text.match(/Name\s*[:.]\s*([^\n\r]+)/i);
+    const nameLineMatch = text.match(/Name\s*[:.]?\s*([^\n\r]+)/i);
     if (nameLineMatch) {
         let rawName = nameLineMatch[1].trim();
         // Stop at the first parenthesis if it exists (for comments like "( PCP...)")
