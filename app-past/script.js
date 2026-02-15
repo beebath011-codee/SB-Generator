@@ -159,6 +159,12 @@ function parseCustomerData(text) {
         }
     }
 
+    // Extract only the last word as the name (e.g. "so bath" -> "bath")
+    if (result.name !== 'N/A') {
+        const words = result.name.trim().split(/\s+/);
+        result.name = words[words.length - 1];
+    }
+
     // Regex for Phone: matches "Phone: 078666153"
     const phoneMatch = text.match(/Phone\s*[:.]?\s*(\d+)/i);
     if (phoneMatch) result.phone = phoneMatch[1];
