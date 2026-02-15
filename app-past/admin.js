@@ -23,7 +23,7 @@ async function loadUsers() {
         tbody.innerHTML = '';
 
         if (snapshot.empty) {
-            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-green-700">No users found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-green-700">No users found</td></tr>';
             return;
         }
 
@@ -36,6 +36,7 @@ async function loadUsers() {
             const isCurrentUser = doc.id === auth.currentUser.uid;
 
             row.innerHTML = `
+                <td class="p-3 text-xs">${data.username || '-'}</td>
                 <td class="p-3 text-xs">${data.email || 'N/A'}</td>
                 <td class="p-3 text-xs">
                     <select onchange="changeRole('${doc.id}', this.value)" 
@@ -92,16 +93,24 @@ async function deleteUser(uid, email) {
 
 // Create new user via Firebase REST API (doesn't sign out the admin)
 async function createUser() {
+    const username = document.getElementById('newUsername').value.trim();
     const email = document.getElementById('newUserEmail').value.trim();
     const password = document.getElementById('newUserPassword').value.trim();
     const role = document.getElementById('newUserRole').value;
 
-    if (!email || !password) {
-        showAdminMsg('Please enter email and password', 'error');
+    if (!username || !email || !password) {
+        showAdminMsg('Please fill in all fields', 'error');
         return;
     }
     if (password.length < 6) {
         showAdminMsg('Password must be at least 6 characters', 'error');
+        return;
+    }
+
+    // Check if username already taken
+    const existingUser = await db.collection('usernames').doc(username.toLowerCase()).get();
+    if (existingUser.exists) {
+        showAdminMsg('Username already taken', 'error');
         return;
     }
 
@@ -132,13 +141,21 @@ async function createUser() {
 
         // Create Firestore document for the new user
         await db.collection('users').doc(data.localId).set({
+            username: username,
             email: email,
             role: role,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             createdBy: auth.currentUser.email
         });
 
-        showAdminMsg(`User ${email} created as ${role.toUpperCase()}`, 'success');
+        // Create username -> email mapping for login lookup
+        await db.collection('usernames').doc(username.toLowerCase()).set({
+            email: email,
+            uid: data.localId
+        });
+
+        showAdminMsg(`User ${username} (${email}) created as ${role.toUpperCase()}`, 'success');
+        document.getElementById('newUsername').value = '';
         document.getElementById('newUserEmail').value = '';
         document.getElementById('newUserPassword').value = '';
         loadUsers();
@@ -159,8 +176,8 @@ function showAdminMsg(msg, type) {
     const el = document.getElementById('adminMsg');
     el.textContent = (type === 'error' ? '⚠ ' : '✓ ') + msg;
     el.className = `mb-4 p-3 border text-xs tracking-wider ${type === 'error'
-            ? 'border-red-800 bg-red-900/20 text-red-400'
-            : 'border-green-800 bg-green-900/20 text-green-400'
+        ? 'border-red-800 bg-red-900/20 text-red-400'
+        : 'border-green-800 bg-green-900/20 text-green-400'
         }`;
     el.classList.remove('hidden');
     setTimeout(() => el.classList.add('hidden'), 4000);

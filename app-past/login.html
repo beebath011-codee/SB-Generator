@@ -106,10 +106,11 @@
             <!-- Login Form -->
             <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider text-green-700">>> Email</label>
-                    <input type="email" id="email" required
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider text-green-700">>> Username or
+                        Email</label>
+                    <input type="text" id="loginId" required
                         class="w-full px-3 py-2 text-sm bg-black border border-green-800 text-green-400 placeholder-green-900 focus:border-green-500 focus:outline-none font-mono"
-                        placeholder="user@example.com">
+                        placeholder="username or user@example.com">
                 </div>
                 <div>
                     <label class="block text-xs font-bold mb-1 uppercase tracking-wider text-green-700">>>
@@ -147,10 +148,10 @@
             }
         });
 
-        // Login only
+        // Login (supports username or email)
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
+            let loginId = document.getElementById('loginId').value.trim();
             const password = document.getElementById('password').value;
             const btn = document.getElementById('loginBtn');
 
@@ -159,6 +160,17 @@
             hideMessages();
 
             try {
+                let email = loginId;
+
+                // If not an email, look up username in Firestore
+                if (!loginId.includes('@')) {
+                    const usernameDoc = await db.collection('usernames').doc(loginId.toLowerCase()).get();
+                    if (!usernameDoc.exists) {
+                        throw { code: 'auth/user-not-found' };
+                    }
+                    email = usernameDoc.data().email;
+                }
+
                 const cred = await auth.signInWithEmailAndPassword(email, password);
                 await ensureUserDoc(cred.user);
                 const isAdmin = await checkAdmin(cred.user);
@@ -194,7 +206,7 @@
             switch (code) {
                 case 'auth/invalid-email': return 'INVALID EMAIL FORMAT';
                 case 'auth/user-disabled': return 'ACCOUNT DISABLED BY ADMIN';
-                case 'auth/user-not-found': return 'ACCOUNT NOT FOUND';
+                case 'auth/user-not-found': return 'USERNAME OR EMAIL NOT FOUND';
                 case 'auth/wrong-password': return 'INCORRECT PASSWORD';
                 case 'auth/invalid-credential': return 'INVALID CREDENTIALS';
                 case 'auth/too-many-requests': return 'TOO MANY ATTEMPTS. TRY LATER';
