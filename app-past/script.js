@@ -134,15 +134,29 @@ function parseCustomerData(text) {
 
     // Regex for Name: matches "Name: Prong Bora ( PCP A2708)"
     // Update: Enforce colon/dot to avoid matching "text box name..." in the first line
-    const nameLineMatch = text.match(/Name\s*[:.]?\s*([^\n\r]+)/i);
-    if (nameLineMatch) {
-        let rawName = nameLineMatch[1].trim();
-        // Stop at the first parenthesis if it exists (for comments like "( PCP...)")
-        const parenIndex = rawName.indexOf('(');
-        if (parenIndex !== -1) {
-            rawName = rawName.substring(0, parenIndex).trim();
+    // Regex for Name: Priority to "First Name" + "Last Name" (or "Surname") combo
+    const firstNameMatch = text.match(/First\s*Name\s*[:.]?\s*([^\n\r]+)/i);
+    const lastNameMatch = text.match(/(?:Last\s*Name|Surname)\s*[:.]?\s*([^\n\r]+)/i);
+
+    if (firstNameMatch && lastNameMatch) {
+        // Found both? Combine them
+        result.name = firstNameMatch[1].trim() + ' ' + lastNameMatch[1].trim();
+    } else if (lastNameMatch) {
+        // Found only Last Name? Use it (User specifically asked to catch last name)
+        result.name = lastNameMatch[1].trim();
+    } else {
+        // Fallback: matches "Name: ...", "Customer Name: ...", "Full Name: ..."
+        // Note: This also matches "First Name: ..." if proper First/Last detection failed, which is acceptable
+        const nameLineMatch = text.match(/Name\s*[:.]?\s*([^\n\r]+)/i);
+        if (nameLineMatch) {
+            let rawName = nameLineMatch[1].trim();
+            // Stop at the first parenthesis if it exists (for comments like "( PCP...)")
+            const parenIndex = rawName.indexOf('(');
+            if (parenIndex !== -1) {
+                rawName = rawName.substring(0, parenIndex).trim();
+            }
+            result.name = rawName;
         }
-        result.name = rawName;
     }
 
     // Regex for Phone: matches "Phone: 078666153"
