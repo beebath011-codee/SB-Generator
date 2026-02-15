@@ -98,15 +98,27 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
 
     } else {
         // --- STANDARD MODE (PPPoE) ---
+        // Build username: add N before @ if DNS mode is on
+        let username = `${macClean}${serviceType}`;
+        if (dnsEnabled) {
+            username = `${macClean}N${serviceType}`;
+        }
+
+        // Build DNS string from full name (lowercase, no spaces, + .todayddns.com)
+        let dnsLine = '';
+        if (dnsEnabled && data.fullName !== 'N/A') {
+            let dnsName = data.fullName;
+            // Remove parenthetical part
+            const parenIdx = dnsName.indexOf('(');
+            if (parenIdx !== -1) {
+                dnsName = dnsName.substring(0, parenIdx).trim();
+            }
+            dnsName = dnsName.toLowerCase().replace(/\s+/g, '');
+            dnsLine = `\nDNS : ${dnsName}.todayddns.com`;
+        }
+
         // 7. Generate Output 1 (User Info)
-        output1 = `Done Bong. Please help test!
-
-ID: ${data.id}
-Name: ${data.fullName}
-Username : ${macClean}${serviceType}      
-Password : ${phone}
-
-Thank you, Bong.`;
+        output1 = `Done Bong. Please help test!\n\nID: ${data.id}\nName: ${data.fullName}\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
 
         // 7. Generate Output 2 (Command)
         output2 = `onu ${onuId} description ${data.id}-${data.name}
@@ -198,6 +210,7 @@ function copyToClipboard(elementId, btnElement) {
 }
 
 let ipcamEnabled = false;
+let dnsEnabled = false;
 
 function toggleIpcam() {
     ipcamEnabled = !ipcamEnabled;
@@ -231,5 +244,27 @@ function toggleIpcam() {
         // Clear IP and Port values
         document.getElementById('ipInput').value = '';
         document.getElementById('portInput').value = '';
+    }
+}
+
+function toggleDns() {
+    dnsEnabled = !dnsEnabled;
+    const toggleBtn = document.getElementById('dnsToggle');
+    const dot = document.getElementById('dnsDot');
+
+    if (dnsEnabled) {
+        toggleBtn.classList.remove('bg-slate-300', 'dark:bg-slate-800');
+        toggleBtn.classList.add('bg-blue-600', 'dark:bg-green-700');
+        dot.classList.remove('left-0.5');
+        dot.classList.add('left-[26px]');
+        dot.classList.remove('dark:bg-green-900');
+        dot.classList.add('dark:bg-green-400');
+    } else {
+        toggleBtn.classList.remove('bg-blue-600', 'dark:bg-green-700');
+        toggleBtn.classList.add('bg-slate-300', 'dark:bg-slate-800');
+        dot.classList.remove('left-[26px]');
+        dot.classList.add('left-0.5');
+        dot.classList.remove('dark:bg-green-400');
+        dot.classList.add('dark:bg-green-900');
     }
 }

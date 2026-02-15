@@ -198,6 +198,20 @@
                     </div>
                 </div>
 
+                <!-- DNS Toggle -->
+                <div class="flex items-center justify-between py-1">
+                    <label class="text-xs font-bold uppercase tracking-wider
+                        text-slate-700 dark:text-green-700 cursor-pointer">
+                        <span class="dark:hidden">DNS Mode</span>
+                        <span class="hidden dark:inline">>> DNS_MODE</span>
+                    </label>
+                    <button id="dnsToggle" type="button" class="relative w-12 h-6 rounded-full transition-colors duration-300
+                        bg-slate-300 dark:bg-slate-800 dark:border dark:border-green-900 dark:rounded-none"
+                        onclick="toggleDns()">
+                        <span id="dnsDot" class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-all duration-300
+                            bg-white shadow dark:bg-green-900 dark:rounded-none"></span>
+                    </button>
+                </div>
                 <button id="generateBtn"
                     class="w-full font-bold py-2 transition-all shadow-sm uppercase tracking-wider text-sm
                     bg-blue-600 hover:bg-blue-700 text-white rounded-lg
@@ -317,7 +331,7 @@
         </div>
     </div>
 
-    <script src="script.js?v=20260215f"></script>
+    <script src="script.js?v=20260215g"></script>
     <script>
         // Theme Toggle Logic
         const themeToggleBtn = document.getElementById('themeToggle');
