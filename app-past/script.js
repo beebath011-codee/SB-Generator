@@ -191,12 +191,12 @@ function parseCustomerData(text) {
         result.id = idVal;
     }
 
-    // Regex for Project: matches "Project：PHP" or "Project: PHP" (supports fullwidth colon)
-    const projectMatch = text.match(/Project\s*[：:]\s*([^\n\r]+)/i);
+    // Regex for Project: matches "Project：PHP", "Project: PHP", or "Project PHP"
+    const projectMatch = text.match(/Project\s*[：:]?\s*([^\n\r]+)/i);
     if (projectMatch) result.project = projectMatch[1].trim();
 
-    // Regex for Room: matches "Room：C2919" or "Room: C2919" (supports fullwidth colon)
-    const roomMatch = text.match(/Room\s*[：:]\s*([^\n\r,]+)/i);
+    // Regex for Room: matches "Room：C2919", "Room: C2919", or "Room C2919"
+    const roomMatch = text.match(/Room\s*[：:]?\s*([^\n\r,]+)/i);
     if (roomMatch) result.room = roomMatch[1].trim();
 
     // Regex for Name: matches "Name: Prong Bora ( PCP A2708)"
