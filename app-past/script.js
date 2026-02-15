@@ -109,8 +109,15 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         // Determine username: use parsed username from text if MAC box is empty, else build from MAC
         let username = '';
         if (macClean === '' && data.username) {
-            // Use the username from the pasted text as-is
+            // Use the username from the pasted text
             username = data.username;
+            // If DNS mode is on, ensure N is before @ (add it if not already there)
+            if (dnsEnabled && username.includes('@')) {
+                const atIndex = username.indexOf('@');
+                if (username.charAt(atIndex - 1) !== 'N') {
+                    username = username.substring(0, atIndex) + 'N' + username.substring(atIndex);
+                }
+            }
         } else {
             // Build username from MAC + service type
             username = `${macClean}${serviceType}`;
