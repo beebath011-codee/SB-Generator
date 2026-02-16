@@ -135,7 +135,10 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
             if (parenIdx !== -1) {
                 dnsName = dnsName.substring(0, parenIdx).trim();
             }
-            dnsName = dnsName.toLowerCase().replace(/\s+/g, '');
+            // Remove title prefixes (Ms., Mr., Mrs., Dr., etc.)
+            dnsName = dnsName.replace(/^(Ms|Mr|Mrs|Dr|Miss)\.?\s*/i, '');
+            // Remove dots and spaces, lowercase
+            dnsName = dnsName.toLowerCase().replace(/[.\s]+/g, '');
             dnsLine = `\nDNS : ${dnsName}.todayddns.com`;
         }
 
