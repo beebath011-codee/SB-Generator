@@ -347,8 +347,8 @@ function updateInterfaceInput() {
     const input = document.getElementById('interfaceInput');
     const currentVal = input.value;
 
-    // Remove any existing prefix (EPON/0: or GPON/0:) and keep the number part
-    const numberPart = currentVal.replace(/^(EPON|GPON)\/0:/i, '').trim();
+    // Remove any existing prefix (EPON/0:, GPON/0:, EPON0/1:, GPON0/1:) and keep the number part
+    const numberPart = currentVal.replace(/^(EPON|GPON)(\/0:|0\/1:)/i, '').trim();
 
     // Set new value with selected prefix + existing number
     input.value = prefix + numberPart;
