@@ -143,9 +143,9 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         // Build info lines: keep Name and include Project/Room when available
         let infoLines = `Done Bong. Please help test!\n\nID: ${data.id}`;
         if (data.fullName !== 'N/A') {
-            // New installation scenario: show Name + Password only
+            // New installation scenario: show Name + Username + Password
             infoLines += `\nName: ${data.fullName}`;
-            infoLines += `\nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
+            infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         } else {
             // Processing scenario: show Project/Room + Username + Password
             if (data.project) {
