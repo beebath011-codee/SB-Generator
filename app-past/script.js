@@ -143,22 +143,19 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         }
 
         // 7. Generate Output 1 (User Info)
-        // Build info lines: keep Name and include Project/Room when available
+        // ID and Name always appear in output
         let infoLines = `Done Bong. Please help test!\n\nID: ${data.id}`;
-        if (data.fullName !== 'N/A') {
-            // New installation scenario: show Name + Username + Password
-            infoLines += `\nName: ${data.fullName}`;
-            infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
-        } else {
-            // Processing scenario: show Project/Room + Username + Password
+        infoLines += `\nName: ${data.fullName}`;
+        if (data.fullName === 'N/A') {
+            // Processing scenario: also show Project/Room when Name is not available
             if (data.project) {
                 infoLines += `\nProject : ${data.project}`;
             }
             if (data.room) {
                 infoLines += `\nRoom : ${data.room}`;
             }
-            infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         }
+        infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         output1 = infoLines;
 
         // 7. Generate Output 2 (Command)
