@@ -137,51 +137,50 @@
                         placeholder="7C:DA:04:AB">
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs font-bold mb-1 uppercase tracking-wider
-                            text-slate-700 dark:text-green-700">
-                            <span class="dark:hidden">Service Type</span>
-                            <span class="hidden dark:inline">>> Service Type</span>
-                        </label>
-                        <select id="serviceType"
-                            class="w-full px-3 py-2 text-sm transition-all
+                <div>
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider
+                        text-slate-700 dark:text-green-700">
+                        <span class="dark:hidden">Service Type</span>
+                        <span class="hidden dark:inline">>> Service Type</span>
+                    </label>
+                    <select id="serviceType"
+                        class="w-full px-3 py-2 text-sm transition-all
+                        bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
+                        dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:focus:border-green-500">
+                        <option value="@fiberlink">@fiberlink</option>
+                        <option value="@todayhome">@todayhome</option>
+                        <option value="@todayfiber">@todayfiber</option>
+                        <option value="@todayplus">@todayplus</option>
+                        <option value="@sf">@sf</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1 uppercase tracking-wider
+                        text-slate-700 dark:text-green-700">
+                        <span class="dark:hidden">GPON/EPON:ONU</span>
+                        <span class="hidden dark:inline">>> GPON/EPON:ONU</span>
+                    </label>
+                    <div class="flex gap-1">
+                        <select id="interfacePrefix" onchange="updateInterfaceInput()"
+                            class="px-2 py-2 text-sm transition-all shrink-0
                             bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
                             dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:focus:border-green-500">
-                            <option value="@fiberlink">@fiberlink</option>
-                            <option value="@todayhome">@todayhome</option>
-                            <option value="@todayfiber">@todayfiber</option>
-                            <option value="@todayplus">@todayplus</option>
-                            <option value="@sf">@sf</option>
+                            <option value="EPON/0:" selected>EPON/0:</option>
+                            <option value="GPON/0:">GPON/0:</option>
                         </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold mb-1 uppercase tracking-wider
-                            text-slate-700 dark:text-green-700">
-                            <span class="dark:hidden">GPON/EPON:ONU</span>
-                            <span class="hidden dark:inline">>> GPON/EPON:ONU</span>
-                        </label>
-                        <div class="flex gap-1">
-                            <select id="interfacePrefix" onchange="updateInterfaceInput()"
-                                class="px-2 py-2 text-sm transition-all shrink-0
-                                bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
-                                dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:focus:border-green-500">
-                                <option value="EPON/0:" selected>EPON/0:</option>
-                                <option value="GPON/0:">GPON/0:</option>
-                            </select>
-                            <input type="text" id="interfaceInput"
-                                class="w-full px-3 py-2 text-sm transition-all
-                                bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
-                                dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:placeholder-green-900 dark:focus:border-green-500"
-                                value="EPON/0:" placeholder="EPON/0:36">
-                            <button onclick="copyInterfaceValue(this)"
-                                class="px-2 py-2 text-xs transition-colors shrink-0 font-mono uppercase
-                                bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 rounded
-                                dark:bg-slate-900 dark:hover:bg-green-900 dark:text-green-500 dark:border-green-700 dark:rounded-none">
-                                <span class="dark:hidden">Copy</span>
-                                <span class="hidden dark:inline">CPY</span>
-                            </button>
-                        </div>
+                        <input type="text" id="interfaceInput"
+                            class="w-full min-w-0 px-3 py-2 text-sm transition-all
+                            bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
+                            dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:placeholder-green-900 dark:focus:border-green-500"
+                            value="EPON/0:" placeholder="EPON/0:36">
+                        <button onclick="copyInterfaceValue(this)"
+                            class="px-2 py-2 text-xs transition-colors shrink-0 font-mono uppercase
+                            bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 rounded
+                            dark:bg-slate-900 dark:hover:bg-green-900 dark:text-green-500 dark:border-green-700 dark:rounded-none">
+                            <span class="dark:hidden">Copy</span>
+                            <span class="hidden dark:inline">CPY</span>
+                        </button>
                     </div>
                 </div>
 
@@ -375,7 +374,7 @@
             }
         });
     </script>
-    <script src="script.js?v=1739681700"></script>
+    <script src="script.js?v=1739681800"></script>
     <script>
         // Theme Toggle Logic
         const themeToggleBtn = document.getElementById('themeToggle');
