@@ -174,6 +174,13 @@
                                 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:ring-blue-500 focus:border-blue-500
                                 dark:bg-black dark:border-green-800 dark:rounded-none dark:font-mono dark:text-green-400 dark:placeholder-green-900 dark:focus:border-green-500"
                                 value="EPON/0:" placeholder="EPON/0:36">
+                            <button onclick="copyInterfaceValue(this)"
+                                class="px-2 py-2 text-xs transition-colors shrink-0 font-mono uppercase
+                                bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 rounded
+                                dark:bg-slate-900 dark:hover:bg-green-900 dark:text-green-500 dark:border-green-700 dark:rounded-none">
+                                <span class="dark:hidden">Copy</span>
+                                <span class="hidden dark:inline">CPY</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -368,7 +375,7 @@
             }
         });
     </script>
-    <script src="script.js?v=1739681600"></script>
+    <script src="script.js?v=1739681700"></script>
     <script>
         // Theme Toggle Logic
         const themeToggleBtn = document.getElementById('themeToggle');

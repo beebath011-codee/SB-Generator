@@ -91,10 +91,9 @@ IP view: ${ipView}
 
 Thank you, Bong.`;
 
-        // Command Output (IP Mode)
-        // Note: User example showed mixed ONU IDs "onu 32" and "onu 23". 
-        // I will assume valid ONU ID is the one from interface (onuId variable).
-        output2 = `onu ${onuId} description ${data.id}-${data.name}
+        // Command Output (IP Mode) - only if ONU ID is valid
+        if (onuId !== '??') {
+            output2 = `onu ${onuId} description ${data.id}-${data.name}
 onu ${onuId} ctc eth 1 vlan pvid ${vlanId} pri 0
 onu ${onuId} ctc eth 1 vlan mode tag
 
@@ -103,6 +102,7 @@ onu ${onuId} ctc eth 2 policy cir 10240 cbs 1024 ebs 1024
 onu ${onuId} ctc eth 2 rate_limit cir 10240 pir 1024 
 onu ${onuId} ctc eth 2 vlan pvid 420 pri 0
 onu ${onuId} ctc eth 2 vlan mode tag`;
+        }
 
     } else {
         // --- STANDARD MODE (PPPoE) ---
@@ -158,12 +158,14 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         output1 = infoLines;
 
-        // 7. Generate Output 2 (Command)
-        // Use Room for description if Name is N/A but Room exists
-        let descLabel = (data.name === 'N/A' && data.room) ? data.room : `${data.id}-${data.name}`;
-        output2 = `onu ${onuId} description ${descLabel}
+        // 7. Generate Output 2 (Command) - only if ONU ID is valid
+        if (onuId !== '??') {
+            // Use Room for description if Name is N/A but Room exists
+            let descLabel = (data.name === 'N/A' && data.room) ? data.room : `${data.id}-${data.name}`;
+            output2 = `onu ${onuId} description ${descLabel}
 onu ${onuId} ctc eth 1 vlan pvid ${vlanId} pri 0
 onu ${onuId} ctc eth 1 vlan mode tag`;
+        }
     }
 
     // 8. Render Outputs
@@ -353,4 +355,17 @@ function updateInterfaceInput() {
 
     // Focus the input so user can type the number right away
     input.focus();
+}
+
+function copyInterfaceValue(btnElement) {
+    const value = document.getElementById('interfaceInput').value;
+    navigator.clipboard.writeText(value).then(() => {
+        // Visual feedback
+        btnElement.classList.add('text-green-500', 'border-green-500');
+        setTimeout(() => {
+            btnElement.classList.remove('text-green-500', 'border-green-500');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
 }
