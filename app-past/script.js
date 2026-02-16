@@ -140,17 +140,18 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         }
 
         // 7. Generate Output 1 (User Info)
-        // Build info lines: show Project/Room instead of Name when available
+        // Build info lines: keep Name and include Project/Room when available
         let infoLines = `Done Bong. Please help test!\n\nID: ${data.id}`;
-        if (data.project) {
-            infoLines += `\nProject ：${data.project}`;
-        }
-        if (data.room) {
-            infoLines += `\nRoom：${data.room}`;
-        }
-        if (!data.project && !data.room) {
-            // Only show Name if no Project/Room
+        if (data.fullName !== 'N/A') {
             infoLines += `\nName: ${data.fullName}`;
+        } else {
+            // Only show Project/Room when Name is not available
+            if (data.project) {
+                infoLines += `\nProject : ${data.project}`;
+            }
+            if (data.room) {
+                infoLines += `\nRoom : ${data.room}`;
+            }
         }
         infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         output1 = infoLines;
@@ -193,26 +194,26 @@ function parseCustomerData(text) {
         result.id = idVal;
     }
 
-    // Regex for Project: matches "Project：PHP", "Project: PHP", or "Project PHP"
-    const projectMatch = text.match(/Project\s*[：:]?\s*([^\n\r]+)/i);
+    // Regex for Project: only from a dedicated line
+    const projectMatch = text.match(/^\s*Project(?:\s*[:\uFF1A]\s*|\s+)([^\n\r]+)/im);
     if (projectMatch) result.project = projectMatch[1].trim();
 
-    // Regex for Room: matches "Room：C2919", "Room: C2919", or "Room C2919"
-    const roomMatch = text.match(/Room\s*[：:]?\s*([^\n\r,]+)/i);
+    // Regex for Room: only from a dedicated line
+    const roomMatch = text.match(/^\s*Room(?:\s*[:\uFF1A]\s*|\s+)([^\n\r,]+)/im);
     if (roomMatch) result.room = roomMatch[1].trim();
 
     // Regex for Name: matches "Name: Prong Bora ( PCP A2708)"
     // Update: Enforce colon/dot to avoid matching "text box name..." in the first line
     // Regex for Name: Priority to "First Name" + "Last Name" (or "Surname") combo
-    const firstNameMatch = text.match(/First\s*Name\s*[:.]?\s*([^\n\r]+)/i);
-    const lastNameMatch = text.match(/(?:Last\s*Name|Surname)\s*[:.]?\s*([^\n\r]+)/i);
+    const firstNameMatch = text.match(/^\s*First\s*Name\s*[:.]?\s*([^\n\r]+)/im);
+    const lastNameMatch = text.match(/^\s*(?:Last\s*Name|Surname)\s*[:.]?\s*([^\n\r]+)/im);
 
     if (firstNameMatch && lastNameMatch) {
         result.fullName = firstNameMatch[1].trim() + ' ' + lastNameMatch[1].trim();
     } else if (lastNameMatch) {
         result.fullName = lastNameMatch[1].trim();
     } else {
-        const nameLineMatch = text.match(/Name\s*[:.]?\s*([^\n\r]+)/i);
+        const nameLineMatch = text.match(/^\s*Name\b\s*[:.]?\s*([^\n\r]+)/im);
         if (nameLineMatch) {
             result.fullName = nameLineMatch[1].trim();
         }
