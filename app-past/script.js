@@ -123,22 +123,24 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         const username = `${snLast8}@fiberlink`;
 
         // Output 1: OUTPUT_OUR_TEAM
+        // Use parsed project/ODN code if available (e.g. Telcotech-TD0324), otherwise fallback to orderCode
+        const footerInfo = data.project || orderCode;
+
         output1 = `Done Bong. Please help test!
 
 ID: ${data.id}
 Name: ${data.fullName}
 Username: ${username}
 Password: ${phone}
-${orderCode}
+${footerInfo}
 
 Thank you, Bong.`;
 
         // Output 2: TO_TCT Group
-        // Use raw MAC input for full SN as requested
+        // Removed VLAN line as requested
         output2 = `Dear bong, please activate this customer new installation
 
 Order: ${orderCode}
-VLAN: ${vlan}
 Mode: Bridge
 
 SN: ${macRaw.trim()}`;
@@ -245,54 +247,90 @@ function parseCustomerData(text) {
         const projectSpaceMatch = text.match(/^\s*Project\s+([A-Za-z0-9][A-Za-z0-9 ]{0,20})\s*$/im);
         if (projectSpaceMatch) result.project = projectSpaceMatch[1].trim();
     }
+    // Fallback: match "Telcotech-..." style codes (robust match)
+    if (!result.project) {
+        // Matches "Telcotech-TD0324", "Telcotech - TD0324", etc.
+        const telcotechMatch = text.match(/(Telcotech\s*-\s*[A-Z0-9]+)/i);
+        if (telcotechMatch) {
+            // Normalize to remove spaces if needed, or just keep as is
+            result.project = telcotechMatch[1].replace(/\s+/g, '');
+        }
+    }
 
     // Regex for Room: only from a dedicated line
     const roomMatch = text.match(/^\s*Room(?:\s*[:\uFF1A]\s*|\s+)([^\n\r,]+)/im);
     if (roomMatch) result.room = roomMatch[1].trim();
 
-    // Regex for Name: matches "Name: Prong Bora ( PCP A2708)"
-    // Update: Enforce colon/dot to avoid matching "text box name..." in the first line
-    // Regex for Name: Priority to "First Name" + "Last Name" (or "Surname") combo
-    const firstNameMatch = text.match(/^\s*First\s*Name\s*[:.]?\s*([^\n\r]+)/im);
-    const lastNameMatch = text.match(/^\s*(?:Last\s*Name|Surname)\s*[:.]?\s*([^\n\r]+)/im);
-
-    if (firstNameMatch && lastNameMatch) {
-        result.fullName = firstNameMatch[1].trim() + ' ' + lastNameMatch[1].trim();
-    } else if (lastNameMatch) {
-        result.fullName = lastNameMatch[1].trim();
-    } else {
-        const nameLineMatch = text.match(/^\s*Name\b\s*[:.]?\s*([^\n\r]+)/im);
-        if (nameLineMatch) {
-            result.fullName = nameLineMatch[1].trim();
-        }
-    }
-
-    // name = last word only (for ONU description)
-    // fullName = raw captured name (for User Info display)
-    if (result.fullName !== 'N/A') {
-        // Remove parenthetical for extracting last word
-        let cleanName = result.fullName;
-        const parenIndex = cleanName.indexOf('(');
-        if (parenIndex !== -1) {
-            cleanName = cleanName.substring(0, parenIndex).trim();
-        }
-        const words = cleanName.trim().split(/\s+/);
-        result.name = words[words.length - 1];
-    }
-
-    // Regex for Phone: matches "Phone: 078666153"
-    const phoneMatch = text.match(/Phone\s*[:.]?\s*(\d+)/i);
-    if (phoneMatch) result.phone = phoneMatch[1];
-
-    // Parse Username from text: matches "Username : 1917FB52N@fiberlink" or "Username: xxx@todayhome"
-    const usernameMatch = text.match(/Username\s*[:.]?\s*([^\s|]+)/i);
-    if (usernameMatch) result.username = usernameMatch[1].trim();
-
-    // Parse Password from text: matches "Password : 012601100" or "Password: xxx"
-    const passwordMatch = text.match(/Password\s*[:.]?\s*([^\s|]+)/i);
-    if (passwordMatch) result.password = passwordMatch[1].trim();
-
     return result;
+}
+
+// Auto-resize textarea logic
+function autoResizeTextarea() {
+    const textarea = document.getElementById('customerInput');
+    textarea.style.height = 'auto'; // Reset height
+    textarea.style.height = (textarea.scrollHeight + 2) + 'px'; // Set to scroll height + border buffer
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing listeners ...
+    const textarea = document.getElementById('customerInput');
+    if (textarea) {
+        // Enforce no scrollbar
+        textarea.style.overflowY = 'hidden';
+
+        textarea.addEventListener('input', autoResizeTextarea);
+        textarea.addEventListener('focus', autoResizeTextarea);
+        textarea.addEventListener('change', autoResizeTextarea);
+
+        // Initial resize
+        setTimeout(autoResizeTextarea, 100);
+    }
+});
+if (roomMatch) result.room = roomMatch[1].trim();
+
+// Regex for Name: matches "Name: Prong Bora ( PCP A2708)"
+// Update: Enforce colon/dot to avoid matching "text box name..." in the first line
+// Regex for Name: Priority to "First Name" + "Last Name" (or "Surname") combo
+const firstNameMatch = text.match(/^\s*First\s*Name\s*[:.]?\s*([^\n\r]+)/im);
+const lastNameMatch = text.match(/^\s*(?:Last\s*Name|Surname)\s*[:.]?\s*([^\n\r]+)/im);
+
+if (firstNameMatch && lastNameMatch) {
+    result.fullName = firstNameMatch[1].trim() + ' ' + lastNameMatch[1].trim();
+} else if (lastNameMatch) {
+    result.fullName = lastNameMatch[1].trim();
+} else {
+    const nameLineMatch = text.match(/^\s*Name\b\s*[:.]?\s*([^\n\r]+)/im);
+    if (nameLineMatch) {
+        result.fullName = nameLineMatch[1].trim();
+    }
+}
+
+// name = last word only (for ONU description)
+// fullName = raw captured name (for User Info display)
+if (result.fullName !== 'N/A') {
+    // Remove parenthetical for extracting last word
+    let cleanName = result.fullName;
+    const parenIndex = cleanName.indexOf('(');
+    if (parenIndex !== -1) {
+        cleanName = cleanName.substring(0, parenIndex).trim();
+    }
+    const words = cleanName.trim().split(/\s+/);
+    result.name = words[words.length - 1];
+}
+
+// Regex for Phone: matches "Phone: 078666153"
+const phoneMatch = text.match(/Phone\s*[:.]?\s*(\d+)/i);
+if (phoneMatch) result.phone = phoneMatch[1];
+
+// Parse Username from text: matches "Username : 1917FB52N@fiberlink" or "Username: xxx@todayhome"
+const usernameMatch = text.match(/Username\s*[:.]?\s*([^\s|]+)/i);
+if (usernameMatch) result.username = usernameMatch[1].trim();
+
+// Parse Password from text: matches "Password : 012601100" or "Password: xxx"
+const passwordMatch = text.match(/Password\s*[:.]?\s*([^\s|]+)/i);
+if (passwordMatch) result.password = passwordMatch[1].trim();
+
+return result;
 }
 
 function copyToClipboard(elementId, btnElement) {
