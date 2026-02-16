@@ -143,17 +143,19 @@ onu ${onuId} ctc eth 2 vlan mode tag`;
         // Build info lines: keep Name and include Project/Room when available
         let infoLines = `Done Bong. Please help test!\n\nID: ${data.id}`;
         if (data.fullName !== 'N/A') {
+            // New installation scenario: show Name + Password only
             infoLines += `\nName: ${data.fullName}`;
+            infoLines += `\nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         } else {
-            // Only show Project/Room when Name is not available
+            // Processing scenario: show Project/Room + Username + Password
             if (data.project) {
                 infoLines += `\nProject : ${data.project}`;
             }
             if (data.room) {
                 infoLines += `\nRoom : ${data.room}`;
             }
+            infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         }
-        infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         output1 = infoLines;
 
         // 7. Generate Output 2 (Command)
@@ -194,9 +196,14 @@ function parseCustomerData(text) {
         result.id = idVal;
     }
 
-    // Regex for Project: only from a dedicated line
-    const projectMatch = text.match(/^\s*Project(?:\s*[:\uFF1A]\s*|\s+)([^\n\r]+)/im);
+    // Regex for Project: only from a dedicated line, require colon separator
+    const projectMatch = text.match(/^\s*Project\s*[:\uFF1A]\s*([^\n\r]+)/im);
     if (projectMatch) result.project = projectMatch[1].trim();
+    // Fallback: match "Project" followed by space + short value (e.g. "Project TC") but NOT address-like text
+    if (!result.project) {
+        const projectSpaceMatch = text.match(/^\s*Project\s+([A-Za-z0-9][A-Za-z0-9 ]{0,20})\s*$/im);
+        if (projectSpaceMatch) result.project = projectSpaceMatch[1].trim();
+    }
 
     // Regex for Room: only from a dedicated line
     const roomMatch = text.match(/^\s*Room(?:\s*[:\uFF1A]\s*|\s+)([^\n\r,]+)/im);
