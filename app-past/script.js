@@ -104,6 +104,45 @@ onu ${onuId} ctc eth 2 vlan pvid 420 pri 0
 onu ${onuId} ctc eth 2 vlan mode tag`;
         }
 
+    } else if (infraTctEnabled) {
+        // --- INFRA-TCT MODE ---
+        const orderCode = serviceType; // Value from dropdown (e.g., "2422")
+        const tctVlanMap = {
+            '2422': '65',
+            '2423': '317',
+            '2424': '420',
+            '2425': 'N/A', // China Route
+            '2426': 'N/A'  // DPLC
+        };
+        const vlan = tctVlanMap[orderCode] || 'N/A';
+
+        // Username: Last 8 chars of SN (entered in MAC field) + @fiberlink
+        // Use macStripped instead of macClean if we want to ensure we take from the input even if short? 
+        // But macClean is last 8. Let's assume input SN is long enough.
+        const snLast8 = macStripped.slice(-8);
+        const username = `${snLast8}@fiberlink`;
+
+        // Output 1: OUTPUT_OUR_TEAM
+        output1 = `Done Bong. Please help test!
+
+ID: ${data.id}
+Name: ${data.fullName}
+Username: ${username}
+Password: ${phone}
+${orderCode}
+
+Thank you, Bong.`;
+
+        // Output 2: TO_TCT Group
+        // Use raw MAC input for full SN as requested
+        output2 = `Dear bong, please activate this customer new installation
+
+Order: ${orderCode}
+VLAN: ${vlan}
+Mode: Bridge
+
+SN: ${macRaw.trim()}`;
+
     } else {
         // --- STANDARD MODE (PPPoE) ---
         // Determine username: use parsed username from text if MAC box is empty, else build from MAC
@@ -375,6 +414,7 @@ let infraTctEnabled = false;
 function toggleInfraTct() {
     infraTctEnabled = !infraTctEnabled;
     const btn = document.getElementById('infraTctBtn');
+    const serviceSelect = document.getElementById('serviceType');
 
     // Labels
     const lblMacLight = document.getElementById('lblMacLight');
@@ -396,6 +436,15 @@ function toggleInfraTct() {
         lblUserInfoDark.innerText = '>> OUTPUT_OUR_TEAM';
         lblCommandLight.innerText = 'TO_TCT Group';
         lblCommandDark.innerText = '>> TO_TCT Group';
+
+        // Swap Dropdown Options
+        serviceSelect.innerHTML = `
+            <option value="2422">2422 (PPPoE)</option>
+            <option value="2423">2423 (GLAN)</option>
+            <option value="2424">2424 (IPCAM)</option>
+            <option value="2425">2425 (China Route)</option>
+            <option value="2426">2426 (DPLC)</option>
+        `;
     } else {
         // Inactive State Style
         btn.classList.remove('bg-green-900', 'text-green-400', 'border-green-500', 'shadow-[0_0_10px_rgba(34,197,94,0.5)]');
@@ -408,5 +457,14 @@ function toggleInfraTct() {
         lblUserInfoDark.innerText = '>> User_Info_Output';
         lblCommandLight.innerText = 'Command';
         lblCommandDark.innerText = '>> Command_Line_Output';
+
+        // Revert Dropdown Options
+        serviceSelect.innerHTML = `
+            <option value="@fiberlink">@fiberlink</option>
+            <option value="@todayhome">@todayhome</option>
+            <option value="@todayfiber">@todayfiber</option>
+            <option value="@todayplus">@todayplus</option>
+            <option value="@sf">@sf</option>
+        `;
     }
 }
