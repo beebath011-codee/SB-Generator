@@ -339,3 +339,18 @@ function toggleDns() {
         dot.classList.add('dark:bg-green-900');
     }
 }
+
+function updateInterfaceInput() {
+    const prefix = document.getElementById('interfacePrefix').value;
+    const input = document.getElementById('interfaceInput');
+    const currentVal = input.value;
+
+    // Remove any existing prefix (EPON/0: or GPON/0:) and keep the number part
+    const numberPart = currentVal.replace(/^(EPON|GPON)\/0:/i, '').trim();
+
+    // Set new value with selected prefix + existing number
+    input.value = prefix + numberPart;
+
+    // Focus the input so user can type the number right away
+    input.focus();
+}
