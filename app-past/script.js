@@ -369,3 +369,44 @@ function copyInterfaceValue(btnElement) {
         console.error('Failed to copy: ', err);
     });
 }
+
+let infraTctEnabled = false;
+
+function toggleInfraTct() {
+    infraTctEnabled = !infraTctEnabled;
+    const btn = document.getElementById('infraTctBtn');
+
+    // Labels
+    const lblMacLight = document.getElementById('lblMacLight');
+    const lblMacDark = document.getElementById('lblMacDark');
+    const lblUserInfoLight = document.getElementById('lblUserInfoLight');
+    const lblUserInfoDark = document.getElementById('lblUserInfoDark');
+    const lblCommandLight = document.getElementById('lblCommandLight');
+    const lblCommandDark = document.getElementById('lblCommandDark');
+
+    if (infraTctEnabled) {
+        // Active State Style
+        btn.classList.add('bg-green-900', 'text-green-400', 'border-green-500', 'shadow-[0_0_10px_rgba(34,197,94,0.5)]');
+        btn.classList.remove('text-slate-400', 'border-slate-600', 'dark:text-green-800', 'dark:border-green-900');
+
+        // Update Labels
+        lblMacLight.innerText = 'SN';
+        lblMacDark.innerText = '>> SN';
+        lblUserInfoLight.innerText = 'OUTPUT_OUR_TEAM';
+        lblUserInfoDark.innerText = '>> OUTPUT_OUR_TEAM';
+        lblCommandLight.innerText = 'TO_TCT Group';
+        lblCommandDark.innerText = '>> TO_TCT Group';
+    } else {
+        // Inactive State Style
+        btn.classList.remove('bg-green-900', 'text-green-400', 'border-green-500', 'shadow-[0_0_10px_rgba(34,197,94,0.5)]');
+        btn.classList.add('text-slate-400', 'border-slate-600', 'dark:text-green-800', 'dark:border-green-900');
+
+        // Revert Labels
+        lblMacLight.innerText = 'MAC Address';
+        lblMacDark.innerText = '>> MAC Address';
+        lblUserInfoLight.innerText = 'User Info';
+        lblUserInfoDark.innerText = '>> User_Info_Output';
+        lblCommandLight.innerText = 'Command';
+        lblCommandDark.innerText = '>> Command_Line_Output';
+    }
+}
