@@ -50,8 +50,12 @@ function generateConfig() {
         if (onuIdMatch) onuId = onuIdMatch[1];
     }
 
-    // 6. Format phone: strip 855 country code prefix (+855 or 855) and prepend 0
+    // 6. Format phone: strip spaces/dashes, handle 855 country code prefix (+855 or 855) and prepend 0
     let phone = data.phone;
+
+    // Clean phone: remove spaces, dashes, and parenthesis
+    phone = phone.replace(/[\s\-\(\)]/g, '');
+
     // Remove leading + if present
     if (phone.startsWith('+')) phone = phone.substring(1);
 
@@ -61,7 +65,7 @@ function generateConfig() {
 
     // If password was parsed from text, use it as fallback for phone
     if (data.password && (phone === 'N/A' || phone === '')) {
-        let pswd = data.password;
+        let pswd = data.password.replace(/[\s\-\(\)]/g, '');
         if (pswd.startsWith('+')) pswd = pswd.substring(1);
         if (pswd.startsWith('855') && pswd.length > 9) {
             pswd = '0' + pswd.substring(3);
@@ -296,14 +300,15 @@ function parseCustomerData(text) {
         result.name = words[words.length - 1];
     }
 
-    // Regex for Phone: matches "Phone: 078666153" or "+855..."
-    const phoneMatch = text.match(/Phone\s*[:.]?\s*(\+?\d+)/i);
+    // Regex for Phone: matches "Phone: 078 666 153" or "+855 12..."
+    // Allow digits, spaces, dashes, and + inside the capture group
+    const phoneMatch = text.match(/Phone\s*[:.]?\s*([\+\d\s\-]+)/i);
     if (phoneMatch) {
-        result.phone = phoneMatch[1];
+        result.phone = phoneMatch[1].trim();
     } else {
-        // Fallback: look for 855 or +855 at the start of a line or after space
-        const strictPhoneMatch = text.match(/(?:\s|^)(\+?855\d{8,10})/);
-        if (strictPhoneMatch) result.phone = strictPhoneMatch[1];
+        // Fallback: look for 855 or +855 with optional spaces/dashes
+        const strictPhoneMatch = text.match(/(?:\s|^)(\+?855[\d\s\-]{8,15})/);
+        if (strictPhoneMatch) result.phone = strictPhoneMatch[1].trim();
     }
 
     // Parse Username from text: matches "Username : 1917FB52N@fiberlink" or "Username: xxx@todayhome"
