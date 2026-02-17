@@ -202,6 +202,9 @@ SN: ${macRaw.trim()}`;
         if (data.room) {
             infoLines += `\nRoom : ${data.room}`;
         }
+        if (numberField && numberField !== 'N/A') {
+            infoLines += `\nNumber : ${numberField}`;
+        }
         infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         output1 = infoLines;
 
@@ -226,6 +229,7 @@ function parseCustomerData(text) {
         name: 'N/A',
         fullName: 'N/A',
         phone: 'N/A',
+        number: 'N/A',
         username: '',
         password: '',
         project: '',
@@ -307,6 +311,10 @@ function parseCustomerData(text) {
         const strictPhoneMatch = text.match(/(?:\s|^)(\+?855[\d\s\-]{8,15})/);
         if (strictPhoneMatch) result.phone = strictPhoneMatch[1].trim();
     }
+
+    // Regex for Number: matches "Number: 015338895"
+    const numberMatch = text.match(/Number\s*[:.]?\s*([\+\d\s\-]+)/i);
+    if (numberMatch) result.number = numberMatch[1].trim();
 
     // Parse Username from text: matches "Username : 1917FB52N@fiberlink" or "Username: xxx@todayhome"
     const usernameMatch = text.match(/Username\s*[:.]?\s*([^\s|]+)/i);
