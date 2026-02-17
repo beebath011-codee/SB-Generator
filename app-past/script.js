@@ -196,14 +196,11 @@ SN: ${macRaw.trim()}`;
         // ID and Name always appear in output
         let infoLines = `Done Bong. Please help test!\n\nID: ${data.id}`;
         infoLines += `\nName: ${data.fullName}`;
-        if (data.fullName === 'N/A') {
-            // Processing scenario: also show Project/Room when Name is not available
-            if (data.project) {
-                infoLines += `\nProject : ${data.project}`;
-            }
-            if (data.room) {
-                infoLines += `\nRoom : ${data.room}`;
-            }
+        if (data.project) {
+            infoLines += `\nProject : ${data.project}`;
+        }
+        if (data.room) {
+            infoLines += `\nRoom : ${data.room}`;
         }
         infoLines += `\nUsername : ${username}      \nPassword : ${phone}${dnsLine}\n\nThank you, Bong.`;
         output1 = infoLines;
@@ -248,12 +245,12 @@ function parseCustomerData(text) {
         result.id = idVal;
     }
 
-    // Regex for Project: only from a dedicated line, require colon separator
-    const projectMatch = text.match(/^\s*Project\s*[:\uFF1A]\s*([^\n\r]+)/im);
+    // Regex for Project: allow anywhere in line, flexible separator
+    const projectMatch = text.match(/Project\s*[:.\uFF1A]?\s*([^\n\r]+)/i);
     if (projectMatch) result.project = projectMatch[1].trim();
-    // Fallback: match "Project" followed by space + short value (e.g. "Project TC") but NOT address-like text
+    // Fallback: match "Project" followed by space + short value
     if (!result.project) {
-        const projectSpaceMatch = text.match(/^\s*Project\s+([A-Za-z0-9][A-Za-z0-9 ]{0,20})\s*$/im);
+        const projectSpaceMatch = text.match(/Project\s+([A-Za-z0-9][A-Za-z0-9 ]{0,20})/i);
         if (projectSpaceMatch) result.project = projectSpaceMatch[1].trim();
     }
     // Fallback: match "Telcotech-..." style codes (robust match)
@@ -266,8 +263,8 @@ function parseCustomerData(text) {
         }
     }
 
-    // Regex for Room: only from a dedicated line
-    const roomMatch = text.match(/^\s*Room(?:\s*[:\uFF1A]\s*|\s+)([^\n\r,]+)/im);
+    // Regex for Room: allow anywhere in line, flexible separator (e.g. room C210 or Room: C210)
+    const roomMatch = text.match(/Room\s*[:.\uFF1A]?\s*([^\n\r,]+)/i);
     if (roomMatch) result.room = roomMatch[1].trim();
 
     // Regex for Name: matches "Name: Prong Bora ( PCP A2708)"
