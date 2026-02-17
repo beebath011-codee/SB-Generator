@@ -52,25 +52,30 @@ function generateConfig() {
 
     // 6. Format phone: strip spaces/dashes, handle 855 country code prefix (+855 or 855) and prepend 0
     let phone = data.phone;
+    let numberField = data.number;
 
-    // Clean phone: remove spaces, dashes, and parenthesis
-    phone = phone.replace(/[\s\-\(\)]/g, '');
+    // Helper to clean and format number strings
+    const formatNum = (num) => {
+        if (!num || num === 'N/A') return num;
+        let cleaned = num.replace(/[\s\-\(\)]/g, '');
+        if (cleaned.startsWith('+')) cleaned = cleaned.substring(1);
+        if (cleaned.startsWith('855') && cleaned.length > 9) {
+            cleaned = '0' + cleaned.substring(3);
+        }
+        return cleaned;
+    };
 
-    // Remove leading + if present
-    if (phone.startsWith('+')) phone = phone.substring(1);
-
-    if (phone.startsWith('855') && phone.length > 9) {
-        phone = '0' + phone.substring(3);
-    }
+    phone = formatNum(phone);
+    numberField = formatNum(numberField);
 
     // If password was parsed from text, use it as fallback for phone
     if (data.password && (phone === 'N/A' || phone === '')) {
-        let pswd = data.password.replace(/[\s\-\(\)]/g, '');
-        if (pswd.startsWith('+')) pswd = pswd.substring(1);
-        if (pswd.startsWith('855') && pswd.length > 9) {
-            pswd = '0' + pswd.substring(3);
-        }
-        phone = pswd;
+        phone = formatNum(data.password);
+    }
+
+    // Fallback: If phone is still missing, use numberField
+    if ((phone === 'N/A' || phone === '') && numberField !== 'N/A' && numberField !== '') {
+        phone = numberField;
     }
 
     // Determine Output Mode based on IP input presence
